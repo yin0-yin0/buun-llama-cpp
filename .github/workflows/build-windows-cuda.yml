@@ -1,0 +1,31 @@
+ name: Build Windows CUDA
+
+    on:
+      workflow_dispatch:
+
+    jobs:
+      build-windows-cuda:
+        runs-on: windows-latest
+        steps:
+          - uses: actions/checkout@v4
+            with:
+              submodules: recursive
+
+          - name: Setup CMake
+            uses: lukka/get-cmake@latest
+
+          - name: Build
+            shell: cmd
+            run: |
+              cmake -B build -DGGML_CUDA=ON -DGGML_NATIVE=ON -DGGML_CUDA_FA=ON -DGGML_CUDA_FA_ALL_QUANTS=ON -DCMAKE_CUDA_ARCHITECTURES="75;80;86;89" -DBUILD_SHARED_LIBS=OFF
+              cmake --build build --config Release -j%NUMBER_OF_PROCESSORS%
+
+          - name: Upload artifacts
+            uses: actions/upload-artifact@v4
+            with:
+              name: turboquant-windows-cuda
+              path: |
+                build/bin/Release/llama-server.exe
+                build/bin/Release/llama-cli.exe
+                build/bin/Release/llama-bench.exe
+                build/bin/Release/*.dll
