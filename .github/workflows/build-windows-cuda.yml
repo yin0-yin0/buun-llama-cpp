@@ -7,6 +7,10 @@
           - uses: actions/checkout@v4
             with:
               submodules: recursive
+          - name: Install CUDA
+            uses: Jimver/cuda-toolkit@v0.2.23
+            with:
+              cuda: '12.4.0'
           - name: Setup CMake
             uses: lukka/get-cmake@latest
           - name: Build
