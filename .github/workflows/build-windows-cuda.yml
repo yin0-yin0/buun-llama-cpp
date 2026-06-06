@@ -16,7 +16,7 @@ jobs:
       - name: Build
         shell: cmd
         run: |
-          cmake -B build -DGGML_CUDA=ON -DGGML_NATIVE=ON -DGGML_CUDA_FA=ON -DCMAKE_CUDA_ARCHITECTURES="89" -DBUILD_SHARED_LIBS=ON
+          cmake -B build -DGGML_CUDA=ON -DGGML_NATIVE=ON -DGGML_CUDA_FA=ON -DGGML_CUDA_FA_ALL_QUANTS=ON -DCMAKE_CUDA_ARCHITECTURES="89" -DBUILD_SHARED_LIBS=ON
           cmake --build build --config Release -j%NUMBER_OF_PROCESSORS%
       - name: Copy CUDA Runtime
         shell: cmd
