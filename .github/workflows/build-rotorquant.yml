@@ -1,0 +1,35 @@
+name: Build RotorQuant Windows CUDA
+on: workflow_dispatch
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: johndpope/llama-cpp-turboquant
+          ref: feature/planarquant-kv-cache
+          submodules: recursive
+      - name: Install CUDA
+        uses: Jimver/cuda-toolkit@v0.2.23
+        with:
+          cuda: '12.4.0'
+      - name: Setup CMake
+        uses: lukka/get-cmake@latest
+      - name: Build
+        shell: cmd
+        run: |
+          cmake -B build -DGGML_CUDA=ON -DGGML_NATIVE=ON -DGGML_CUDA_FA=ON -DCMAKE_CUDA_ARCHITECTURES="89" -DBUILD_SHARED_LIBS=ON -DGGML_CUDA_CUB_3DOT2=ON
+          cmake --build build --config Release -j%NUMBER_OF_PROCESSORS%
+      - name: Copy CUDA Runtime
+        shell: cmd
+        run: |
+          copy "%CUDA_PATH%\bin\cudart64_12.dll" build\bin\Release\
+          copy "%CUDA_PATH%\bin\cublas64_12.dll" build\bin\Release\
+          copy "%CUDA_PATH%\bin\cublasLt64_12.dll" build\bin\Release\
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: rotorquant-windows-cuda
+          path: |
+            build/bin/Release/*.exe
+            build/bin/Release/*.dll
